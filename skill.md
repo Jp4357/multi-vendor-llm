@@ -48,7 +48,13 @@ When the user invokes this skill:
      - OpenRouter: `OPENROUTER_API_KEY`
      - Ollama: `OLLAMA_API_KEY` (optional — omit for local mode, set for cloud API)
    - The generated client file uses `load_dotenv()` to read from `.env` automatically
-4. **Generate client file** — read the matching template from `templates/`, strip out any sections for unselected features, add dotenv loading at the top, and write it into the user's current working directory (e.g. `openai_client.py`)
+4. **Generate client file** — read the matching template from `templates/` and strip sections the user did not select. Each feature is wrapped in markers:
+   ```
+   # ── FEATURE:chat ──
+   ...code...
+   # ── END FEATURE:chat ──
+   ```
+   Remove the entire block (including marker lines) for any unselected feature. Write the result into the user's current working directory (e.g. `openai_client.py`)
 5. **Customize** — adjust the default model or parameters if the user specified any
 6. **requirements.txt** — add the required packages to `requirements.txt` in the project root (create it if missing, append if it already exists — never duplicate existing entries). Always include `python-dotenv`. Packages per vendor:
    - OpenAI: `openai`

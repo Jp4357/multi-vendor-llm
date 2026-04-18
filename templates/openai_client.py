@@ -12,14 +12,25 @@ load_dotenv()  # loads OPENAI_API_KEY from .env file
 
 _client = OpenAI()  # reads OPENAI_API_KEY from environment
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 DEFAULT_CHAT_MODEL = "gpt-4o"
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
+
+# ── FEATURE:image ─────────────────────────────────────────────────────────────
 DEFAULT_IMAGE_MODEL = "gpt-image-1.5"
+# ── END FEATURE:image ─────────────────────────────────────────────────────────
+
+# ── FEATURE:tts ───────────────────────────────────────────────────────────────
 DEFAULT_TTS_MODEL = "tts-1"
 DEFAULT_TTS_VOICE = "alloy"
+# ── END FEATURE:tts ───────────────────────────────────────────────────────────
+
+# ── FEATURE:stt ───────────────────────────────────────────────────────────────
 DEFAULT_STT_MODEL = "whisper-1"
+# ── END FEATURE:stt ───────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_CHAT_MODEL, system: str = None, **kwargs) -> str:
     """Send a single prompt and return the full reply as a string."""
@@ -43,8 +54,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_CHAT_MODEL, system: str = None
         if delta:
             yield delta
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation. Maintains full message history."""
@@ -83,14 +92,20 @@ class ChatSession:
                 yield delta
         self._history.append({"role": "assistant", "content": "".join(full_reply)})
 
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
-# ── Image / Audio ─────────────────────────────────────────────────────────────
+
+# ── FEATURE:image ─────────────────────────────────────────────────────────────
 
 def generate_image(prompt: str, model: str = DEFAULT_IMAGE_MODEL, size: str = "1024x1024", n: int = 1) -> list[str]:
     """Generate image(s) and return a list of URLs."""
     response = _client.images.generate(model=model, prompt=prompt, size=size, n=n)
     return [item.url for item in response.data]
 
+# ── END FEATURE:image ─────────────────────────────────────────────────────────
+
+
+# ── FEATURE:tts ───────────────────────────────────────────────────────────────
 
 def text_to_speech(text: str, output_path: str = "output.mp3", model: str = DEFAULT_TTS_MODEL, voice: str = DEFAULT_TTS_VOICE) -> str:
     """Convert text to speech, save to file, return the output path."""
@@ -98,6 +113,10 @@ def text_to_speech(text: str, output_path: str = "output.mp3", model: str = DEFA
     response.stream_to_file(output_path)
     return output_path
 
+# ── END FEATURE:tts ───────────────────────────────────────────────────────────
+
+
+# ── FEATURE:stt ───────────────────────────────────────────────────────────────
 
 def transcribe(audio_path: str, model: str = DEFAULT_STT_MODEL, language: str = None) -> str:
     """Transcribe an audio file to text using Whisper."""
@@ -105,6 +124,8 @@ def transcribe(audio_path: str, model: str = DEFAULT_STT_MODEL, language: str = 
     with open(audio_path, "rb") as f:
         transcript = _client.audio.transcriptions.create(model=model, file=f, **kwargs)
     return transcript.text
+
+# ── END FEATURE:stt ───────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────

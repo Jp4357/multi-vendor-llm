@@ -9,7 +9,7 @@ import os
 import sys
 from typing import Generator
 from dotenv import load_dotenv
-from ollama import Client, chat as _local_chat
+from ollama import Client
 
 load_dotenv()  # loads OLLAMA_API_KEY from .env if present
 
@@ -26,10 +26,12 @@ else:
     _client = Client()  # connects to local Ollama (http://localhost:11434)
     _mode = "local"
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 DEFAULT_MODEL = "llama3.2"
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **kwargs) -> str:
     """Send a single prompt and return the full reply."""
@@ -53,8 +55,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **k
         if delta:
             yield delta
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation. Maintains full message history."""
@@ -93,19 +93,7 @@ class ChatSession:
                 yield delta
         self._history.append({"role": "assistant", "content": "".join(full_reply)})
 
-
-# ── Unsupported modalities ────────────────────────────────────────────────────
-
-def generate_image(prompt: str, **kwargs) -> list:
-    raise NotImplementedError("Ollama does not support image generation.")
-
-
-def text_to_speech(text: str, **kwargs) -> bytes:
-    raise NotImplementedError("Ollama does not support TTS.")
-
-
-def transcribe(audio_path: str, **kwargs) -> str:
-    raise NotImplementedError("Ollama does not support STT/transcription.")
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────

@@ -16,6 +16,7 @@ _client = OpenAI(
     api_key=os.environ.get("OPENROUTER_API_KEY", ""),
 )
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 # Any OpenRouter model ID works — examples:
 #   "openai/gpt-4.1"                  OpenAI
 #   "anthropic/claude-sonnet-4-6"     Anthropic
@@ -23,9 +24,10 @@ _client = OpenAI(
 #   "meta-llama/llama-4-scout"        Meta
 #   "mistralai/mistral-large"         Mistral
 DEFAULT_MODEL = "google/gemini-2.5-flash"
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **kwargs) -> str:
     """Send a single prompt through OpenRouter and return the full reply."""
@@ -49,8 +51,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **k
         if delta:
             yield delta
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation. Switch models per-session."""
@@ -89,22 +89,7 @@ class ChatSession:
                 yield delta
         self._history.append({"role": "assistant", "content": "".join(full_reply)})
 
-
-# ── Unsupported modalities ────────────────────────────────────────────────────
-
-def generate_image(prompt: str, **kwargs) -> list:
-    raise NotImplementedError(
-        "OpenRouter chat completions do not support image generation. "
-        "Use openai_client.py (DALL-E) or gemini_client.py (Imagen) instead."
-    )
-
-
-def text_to_speech(text: str, **kwargs) -> bytes:
-    raise NotImplementedError("OpenRouter does not expose TTS endpoints.")
-
-
-def transcribe(audio_path: str, **kwargs) -> str:
-    raise NotImplementedError("OpenRouter does not expose STT/transcription endpoints.")
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────

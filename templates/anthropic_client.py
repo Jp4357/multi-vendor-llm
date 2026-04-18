@@ -12,11 +12,13 @@ load_dotenv()  # loads ANTHROPIC_API_KEY from .env file
 
 _client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from environment
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 DEFAULT_MODEL = "claude-sonnet-4-6"
 DEFAULT_MAX_TOKENS = 1024
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, max_tokens: int = DEFAULT_MAX_TOKENS, **kwargs) -> str:
     """Send a single prompt and return the full reply as a string."""
@@ -43,8 +45,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, max
     ) as stream:
         yield from stream.text_stream
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation. Maintains full message history."""
@@ -87,19 +87,7 @@ class ChatSession:
                 yield text
         self._history.append({"role": "assistant", "content": "".join(full_reply)})
 
-
-# ── Unsupported modalities ────────────────────────────────────────────────────
-
-def generate_image(prompt: str, **kwargs) -> list:
-    raise NotImplementedError("Anthropic does not support image generation.")
-
-
-def text_to_speech(text: str, **kwargs) -> bytes:
-    raise NotImplementedError("Anthropic does not support TTS.")
-
-
-def transcribe(audio_path: str, **kwargs) -> str:
-    raise NotImplementedError("Anthropic does not support STT/transcription.")
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────

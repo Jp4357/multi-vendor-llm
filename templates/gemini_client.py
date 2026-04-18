@@ -1,5 +1,5 @@
 """
-Google Gemini client — text and image generation.
+Google Gemini client — text, image generation, TTS.
 Requires: pip install google-genai python-dotenv
 Env var:  GEMINI_API_KEY (loaded from .env automatically)
 NOTE: Use google-genai, NOT google-generativeai (deprecated since Nov 2025)
@@ -14,11 +14,16 @@ load_dotenv()  # loads GEMINI_API_KEY from .env file
 
 _client = genai.Client()  # reads GEMINI_API_KEY from environment
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 DEFAULT_CHAT_MODEL = "gemini-2.5-flash"
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
+
+# ── FEATURE:image ─────────────────────────────────────────────────────────────
 DEFAULT_IMAGE_MODEL = "imagen-4.0-generate-001"
+# ── END FEATURE:image ─────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_CHAT_MODEL, system: str = None, **kwargs) -> str:
     """Send a single prompt and return the full reply as a string."""
@@ -34,8 +39,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_CHAT_MODEL, system: str = None
         if chunk.text:
             yield chunk.text
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation using Gemini's native chat API."""
@@ -68,8 +71,10 @@ class ChatSession:
             if chunk.text:
                 yield chunk.text
 
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
-# ── Image ─────────────────────────────────────────────────────────────────────
+
+# ── FEATURE:image ─────────────────────────────────────────────────────────────
 
 def generate_image(prompt: str, model: str = DEFAULT_IMAGE_MODEL, number_of_images: int = 1, output_dir: str = ".") -> list[str]:
     """Generate image(s) via Imagen and save to disk. Returns list of saved file paths."""
@@ -85,6 +90,10 @@ def generate_image(prompt: str, model: str = DEFAULT_IMAGE_MODEL, number_of_imag
         paths.append(path)
     return paths
 
+# ── END FEATURE:image ─────────────────────────────────────────────────────────
+
+
+# ── FEATURE:tts ───────────────────────────────────────────────────────────────
 
 def text_to_speech(text: str, output_path: str = "out.wav", voice_name: str = "Kore") -> str:
     """Convert text to speech using Gemini TTS, save as WAV, return the output path."""
@@ -109,9 +118,7 @@ def text_to_speech(text: str, output_path: str = "out.wav", voice_name: str = "K
         wf.writeframes(pcm)
     return output_path
 
-
-def transcribe(audio_path: str, **kwargs) -> str:
-    raise NotImplementedError("Gemini API does not support STT/transcription as of April 2026.")
+# ── END FEATURE:tts ───────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────

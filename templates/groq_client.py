@@ -13,10 +13,12 @@ load_dotenv()  # loads GROQ_API_KEY from .env file
 
 _client = Groq()  # reads GROQ_API_KEY from environment
 
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 DEFAULT_MODEL = "llama-3.3-70b-versatile"
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
-# ── Single-shot ───────────────────────────────────────────────────────────────
+# ── FEATURE:chat ──────────────────────────────────────────────────────────────
 
 def chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **kwargs) -> str:
     """Send a single prompt and return the full reply as a string."""
@@ -40,8 +42,6 @@ def stream_chat(prompt: str, model: str = DEFAULT_MODEL, system: str = None, **k
         if delta:
             yield delta
 
-
-# ── Multi-turn session ────────────────────────────────────────────────────────
 
 class ChatSession:
     """Stateful multi-turn conversation. Maintains full message history."""
@@ -80,19 +80,7 @@ class ChatSession:
                 yield delta
         self._history.append({"role": "assistant", "content": "".join(full_reply)})
 
-
-# ── Unsupported modalities ────────────────────────────────────────────────────
-
-def generate_image(prompt: str, **kwargs) -> list:
-    raise NotImplementedError("Groq does not support image generation.")
-
-
-def text_to_speech(text: str, **kwargs) -> bytes:
-    raise NotImplementedError("Groq does not support TTS.")
-
-
-def transcribe(audio_path: str, **kwargs) -> str:
-    raise NotImplementedError("Groq does not support STT/transcription.")
+# ── END FEATURE:chat ──────────────────────────────────────────────────────────
 
 
 # ── Environment check ─────────────────────────────────────────────────────────
